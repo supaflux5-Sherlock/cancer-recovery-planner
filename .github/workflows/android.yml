@@ -1,0 +1,73 @@
+name: Android APK
+
+# Builds the installable debug APK. GitHub's ubuntu runners ship with the
+# Android SDK, so this produces a real APK without anyone needing Android
+# Studio locally -- download it from the run's Artifacts section.
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # Puts ANDROID_HOME on the environment and accepts the SDK licences, so
+      # the Gradle plugin can fetch any platform the runner image lacks.
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Assembles www/ from the public build only, then copies it into the
+      # native project. Both are generated, so neither is in version control.
+      - name: Sync web assets into the native project
+        run: npm run sync
+
+      - name: Assert the account build was not bundled
+        run: |
+          if [ -e android/app/src/main/assets/public/account ]; then
+            echo "::error::account/ was bundled into the APK"
+            exit 1
+          fi
+          echo "bundled assets:"
+          ls android/app/src/main/assets/public
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Report APK
+        run: |
+          apk=$(find android/app/build/outputs/apk/debug -name '*.apk' | head -1)
+          echo "APK: $apk ($(du -h "$apk" | cut -f1))"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cancer-recovery-planner-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
