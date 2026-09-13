@@ -102,12 +102,22 @@ not publishable. A Play release additionally needs:
 4. `versionCode` incremented on every upload — it is currently `1`, in
    `android/app/build.gradle`.
 
+## Fonts
+
+IBM Plex Sans and IBM Plex Mono are self-hosted in `fonts/` and bundled into
+the APK, so the app renders correctly offline from first launch — no network
+call to Google Fonts is made at any point. Regenerate with:
+
+```bash
+python3 scripts/fetch-fonts.py
+```
+
+This is the only step that touches the network, and it runs at development
+time, never in the app. `fonts/fonts.css` is generated; do not hand-edit it.
+
 ## Known limitations
 
-- **Fonts need a network on first launch.** The web app loads IBM Plex from
-  `fonts.googleapis.com`, and that request is not bundled. Opened offline, the
-  app falls back to the system sans-serif; everything else works, since all
-  data is local. Bundling the fonts into the APK would remove the dependency.
-- **This project has not been compiled yet.** The environment it was scaffolded
-  in has no access to Google's Android artifact hosts, so the first real build
-  is the CI run on the first push. Read that run before trusting the APK.
+- **This project has not been compiled here.** The environment it was
+  scaffolded in has no access to Google's Android artifact hosts, so the
+  first real build was the CI run on the first push — it succeeded. Check
+  the Actions tab for the current state before trusting a given commit.
