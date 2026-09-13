@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Cancer Recovery Planner</string>
+    <string name="title_activity_main">Cancer Recovery Planner</string>
+    <string name="package_name">com.thenewnormalhub.cancerrecovery</string>
+    <string name="custom_url_scheme">com.thenewnormalhub.cancerrecovery</string>
+</resources>

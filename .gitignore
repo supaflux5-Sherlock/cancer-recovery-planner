@@ -1,0 +1,13 @@
+# Android / Capacitor build tooling. The web app itself still has no build
+# step -- these exist only to package it as an APK.
+node_modules/
+www/
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/release/
+*.apk
+*.aab
+*.keystore
+.DS_Store

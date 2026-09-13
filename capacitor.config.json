@@ -1,0 +1,8 @@
+{
+  "appId": "com.thenewnormalhub.cancerrecovery",
+  "appName": "Cancer Recovery Planner",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}
